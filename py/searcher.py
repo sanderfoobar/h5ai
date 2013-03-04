@@ -1,8 +1,14 @@
 #!/usr/bin/python
 import re,sys,os, urllib2, urllib, gzip, glob, json
+import ConfigParser
+
+scriptpath = os.path.dirname(os.path.abspath(__file__))
+
+config = ConfigParser.ConfigParser()
+config.read('%s/config.cfg'%(scriptpath))
 
 results = []
-recursive = 10 # hoe diep crawlen?
+recursive = config.get('General', 'recursive') 
 
 class result(object):
     def __init__(self, host=None, relpath=None, name=None, section=None, imdb=None):
@@ -22,9 +28,9 @@ if len(search) <= 3:
     print 'Te kort'
     sys.exit(0)
 
-gz_files = glob.glob('/export/public/search/py/db/*.gz')
+gz_files = glob.glob('%s/db/*.gz'%(scriptpath))
 
-f = open('/export/public/search/py/conf/sites.txt')
+f = open('%s/conf/sites.txt'%(scriptpath))
 gz_sites = f.readlines()
 f.close()
 
