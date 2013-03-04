@@ -1,4 +1,4 @@
 00index.sh
 py/conf/sites.txt
 py/db/*
-index.php
+config.php

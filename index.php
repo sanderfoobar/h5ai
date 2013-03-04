@@ -1,8 +1,11 @@
+<?
+include("config.php");
+?>
 <!DOCTYPE html><!--[if lt IE 9]><html class="no-js oldie" lang="en"><![endif]--><!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Kroketten Search Repository</title>
+	<title>Search Repository</title>
 	<meta name="description" content="w00t"><meta name="viewport" content="width=device-width">
 	<link rel="shortcut icon" href="/_h5ai/client/images/app-16x16.ico">
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic|Ubuntu:400,700,400italic,700italic">
@@ -11,7 +14,7 @@
 	<body bgcolor="#0c0c0c">
 </head>
 </style>
-<body id="h5ai-main"><div id="topbar" class="clearfix"><ul id="navbar"></ul></div><div id="content"><pre><center><a href="https://kroket.0wn.nl:707/export/"><img src="/_h5ai/client/images/kroket.png"/><br></a><br><form action="https://kroket.0wn.nl:707/search/" method="get"><input name="q" type="text" style="outline:0; border: 3px solid  #00bb00; border-radius: 5px;-moz-border-radius:5px; border-color: #00bb00; background-color: #00bb00; padding-left: 5px" value="Do _NOT_ share :) Type here to search..." size="55" size="12" maxlength="120" onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;"></pre></center>
+<body id="h5ai-main"><div id="topbar" class="clearfix"><ul id="navbar"></ul></div><div id="content"><pre><center><br><form action="<?=$rootpath?>" method="get"><input name="q" type="text" style="outline:0; border: 3px solid  #00bb00; border-radius: 5px;-moz-border-radius:5px; border-color: #00bb00; background-color: #00bb00; padding-left: 5px" value="Do _NOT_ share :) Type here to search..." size="55" size="12" maxlength="120" onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;"></pre></center>
 
 <?php 
 
@@ -25,13 +28,13 @@ $search = $_GET['q'];
 if(isset($search)){
 	//limit
 	$ip=$_SERVER['REMOTE_ADDR'];
-	$whitelist = array("ip_here"); #ips to whitelist
 	$whitelisted = False;
 	$output = null;
 
 	foreach($whitelist as $white){
 		if(startsWith($ip, $white)){
 			$whitelisted = True;
+            echo "Whitelisted";
 		}
 	}
 
@@ -41,10 +44,8 @@ if(isset($search)){
 	else{
 		exec('/usr/bin/python py/searcher.py -l ' . escapeshellarg($search), $output);
 	}
-	
-	$test = implode('',$output);
-
-	$xml = simplexml_load_string($test) or die("<center><h4>No results or malformed input.</h4></center>");
+    $output = implode('',$output);
+    $json = json_decode($output);
 
 	echo '<div id="extended" class="clearfix view-details" style="display:block;">';
 	echo '<ul>';
@@ -63,15 +64,15 @@ if(isset($search)){
 	echo '<span class="l10n-size">URL</span>';
 	echo '</a>';
 
-	foreach($xml->children() as $results){
-		foreach($results->children() as $result => $data){
+    if (sizeof($json) == 0) die("<center><h4>No results or malformed input.</h4></center>");
+
+	foreach($json as $data){
 		  $name = $data->name;
 		  $host = $data->host;
 		  $section = $data->section;
 		  $url = $data->url;
 		  $imdb = $data->imdb;
 		  echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="ico/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
-		}
 	}
 }
 else{
