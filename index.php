@@ -34,7 +34,6 @@ if(isset($search)){
 	foreach($whitelist as $white){
 		if(startsWith($ip, $white)){
 			$whitelisted = True;
-            echo "Whitelisted";
 		}
 	}
 
@@ -72,7 +71,7 @@ if(isset($search)){
 		  $section = $data->section;
 		  $url = $data->url;
 		  $imdb = $data->imdb;
-		  echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="ico/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
+		  echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="/_h5ai/client/icons/16x16/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
 	}
 }
 else{
