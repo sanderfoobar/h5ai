@@ -1,5 +1,6 @@
 <?
 include("config.php");
+include("functions.php");
 ?>
 <!DOCTYPE html><!--[if lt IE 9]><html class="no-js oldie" lang="en"><![endif]--><!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
@@ -67,9 +68,9 @@ if(isset($search)){
 
 	foreach($json as $data){
 		  $name = $data->name;
-		  $host = $data->host;
+		  $host = replace_url($data->host);
 		  $section = $data->section;
-		  $url = $data->url;
+		  $url = replace_url($data->url);
 		  $imdb = $data->imdb;
 		  echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="/_h5ai/client/icons/16x16/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
 	}
