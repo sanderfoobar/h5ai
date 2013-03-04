@@ -2,6 +2,7 @@
 import re,sys,os,urllib2, urllib, gzip
 
 #to-do: add https support
+scriptpath = os.path.dirname(os.path.abspath(__file__))
 
 def fetch(uri,dest):
 	try:
@@ -23,7 +24,7 @@ def fetch(uri,dest):
 		print ex
 		return
 
-f = open(os.getcwd()+'/conf/sites.txt',"r")
+f = open(scriptpath+'/conf/sites.txt',"r")
 m = f.readlines()
 f.close()
 
@@ -32,5 +33,5 @@ for site in m:
 	if not site.startswith("#"):
 		print site
 		site = site.replace("\n","")
-		fetch(site,'db/'+str(i)+'.gz')
+		fetch(site,scriptpath+'/db/'+str(i)+'.gz')
 	i+=1
