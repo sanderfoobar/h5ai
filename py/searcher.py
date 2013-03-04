@@ -65,18 +65,9 @@ if len(results) <= 0:
 
 data = []
 
-#print '<?xml version="1.0"?><data><results>'
 for result in results:
     data.append({"host":result.host,"name":result.name,"section":result.section,"url":result.host + urllib.quote(result.relpath)})
-#    print '<result>'
-#    print '<host>' + result.host + '</host>'
-#    print '<name>' + result.name + '</name>'
-#    #print '<imdb>' + result.imdb + '</imdb>'
-#    print '<section>' + result.section + '</section>'
-#    print '<url>' + result.host + urllib.quote(result.relpath) + '</url>'
-#    print '</result>'
 
-#print '</results></data>'
 if len(data) > 1:
     print json.dumps(data)
 sys.exit(1)
