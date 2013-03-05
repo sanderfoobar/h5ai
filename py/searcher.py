@@ -59,15 +59,15 @@ for gz_file in gz_files:
             relpath = " "
             relpath = relpath.join(line.split(relpath)[4:]).rstrip('\n\r')
             search = search.lower()
+            timestamp = int(line.split(" ")[1].split(".")[0])
 
-            if search in relpath.replace('_',' ').replace('-',' ').replace('.',' ').lower() and relpath.count('/') <= recursive:
+            if (not args.timestamp and (search in relpath.replace('_',' ').replace('-',' ').replace('.',' ').lower() and relpath.count('/') <= recursive)) or (args.timestamp and timestamp > int(search)):
                 dont_show = ['subtitle','sample','subs','screens','insert','proof']
                 lame = False
                 for dont in dont_show:
                     if '/'+dont in relpath.lower():
                         lame = True
                 if not lame:
-                    timestamp = line.split(" ")[1].split(".")[0]
                     results.append(result(gz_uri.replace('00INDEX.gz','').split(" ")[0],relpath, relpath[relpath.find('/') + 1:],relpath[:relpath.find('/')],'',timestamp))
     gz.close()
     i += 1
