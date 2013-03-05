@@ -16,7 +16,17 @@ include("functions.php");
 </head>
 </style>
 <body id="h5ai-main"><div id="topbar" class="clearfix"><ul id="navbar"></ul></div><div id="content"><pre><center><br><form action="<?=$rootpath?>" method="get"><input name="q" type="text" style="outline:0; border: 3px solid  #00bb00; border-radius: 5px;-moz-border-radius:5px; border-color: #00bb00; background-color: #00bb00; padding-left: 5px" value="Do _NOT_ share :) Type here to search..." size="55" size="12" maxlength="120" onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;"></pre></center>
-
+</form><form method="get"><input type="hidden" value="True" name="time">
+<select name="q" id="datetime" onchange="this.form.submit()">
+<option value="">Select date</option>
+</select>
+</form>
+<script>
+var select = document.getElementById("datetime");
+var curDate = Math.round(+new Date() / 1000);
+select.options[select.options.length] = new Option('1 day ago', curDate - 86400);
+select.options[select.options.length] = new Option('7 days ago', curDate - (7*86400)); 
+</script>
 <?php 
 
 function startsWith($haystack, $needle)
@@ -39,7 +49,8 @@ if(isset($search)){
 	}
 
 	if($whitelisted){
-		exec('/usr/bin/python py/searcher.py -a -j ' . escapeshellarg($search), $output);
+		if ($_GET['time']) exec('/usr/bin/python py/searcher.py -a -j -t ' . escapeshellarg($search), $output);
+		else exec('/usr/bin/python py/searcher.py -a -j ' . escapeshellarg($search), $output);
 	}
 	else{
 		exec('/usr/bin/python py/searcher.py -l -j ' . escapeshellarg($search), $output);
