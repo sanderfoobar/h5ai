@@ -39,10 +39,10 @@ if(isset($search)){
 	}
 
 	if($whitelisted){
-		exec('/usr/bin/python py/searcher.py -a ' . escapeshellarg($search), $output);
+		exec('/usr/bin/python py/searcher.py -a -j ' . escapeshellarg($search), $output);
 	}
 	else{
-		exec('/usr/bin/python py/searcher.py -l ' . escapeshellarg($search), $output);
+		exec('/usr/bin/python py/searcher.py -l -j ' . escapeshellarg($search), $output);
 	}
     $output = implode('',$output);
     $json = json_decode($output);
@@ -66,19 +66,18 @@ if(isset($search)){
 
     if (sizeof($json) == 0) die("<center><h4>No results or malformed input.</h4></center>");
 
-	foreach($json as $data){
-		  $name = $data->name;
-		  $host = replace_url($data->host);
-		  $section = $data->section;
-		  $url = replace_url($data->url);
-		  $imdb = $data->imdb;
-		  echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="/_h5ai/client/icons/16x16/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
-	}
-}
-else{
-	echo "<center>Try searching something.</center>";
-	
-}
+	    foreach($json as $data){
+		    $name = $data->name;
+		    $host = replace_url($data->host);
+		    $section = $data->section;
+		    $url = replace_url($data->url);
+		    $imdb = $data->imdb;
+		    echo '</a><li class="entry folder"><a class="" href="'.$url.'"><span class="icon small"><img src="/_h5ai/client/icons/16x16/folder.png" /></span></span><span class="label">'. $name .'</span><span class="date">'.$section.'</span><span class="size">'.$host.'</span></a></li>';
+	    }
+    }
+    else{
+	    echo "<center>Try searching something.</center>";
+    }
 ?>
 </ul>
 </font>
