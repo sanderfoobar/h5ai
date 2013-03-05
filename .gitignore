@@ -2,3 +2,4 @@
 py/conf/sites.txt
 py/db/*
 config.php
+config.cfg
