@@ -64,8 +64,9 @@ if config.get('Database','enabled') == "1":
         query['type'] = 'f'
     else:
         query['type'] = 'd'
-        del query['name']
-        query['path'] = {'$regex':'.*%s.*'%(search),'$options':'i'}
+        if not args.timestamp:
+            del query['name']
+            query['path'] = {'$regex':'.*%s.*'%(search),'$options':'i'}
     dataset = database.search.find(query)
     for data in dataset:
         results.append(result(urllib.unquote_plus(data['host']),urllib.unquote_plus(data['path']),urllib.unquote_plus(data['name']),data['section'],data['imdb'],data['timestamp']))
