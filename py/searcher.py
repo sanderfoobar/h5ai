@@ -38,39 +38,71 @@ search = args.key
 if len(search) <= 3:
     print 'Te kort'
     sys.exit(0)
+if config.get('Database','enabled') == "1":
+    import pymongo
+    try:
+        connection = pymongo.Connection(config.get('Database', 'host'))
+        database = connection[config.get('Database','name')]
+    except:
+        print('Error: Unable to connect to database.')
+        connection = None
+    if connection is None:
+        print('Some error is here')
 
-gz_files = glob.glob('%s/db/*.gz'%(scriptpath))
+    if args.local:
+        if args.timestamp:
+            query = {'timestamp': {'$gte': int(search)},'sourcefile':'1.gz'}
+        else:
+            query = {'name': {'$regex':'.*%s.*'%(search),'$options':'i'},'sourcefile':'1.gz'}
+    else:
+        if args.timestamp:
+            query = {'timestamp': {'$gte': int(search)}}
+        else:
+            query = {'name': {'$regex':'.*%s.*'%(search),'$options':'i'}}
 
-f = open('%s/conf/sites.txt'%(scriptpath))
-gz_sites = f.readlines()
-f.close()
+    if args.file:
+        query['type'] = 'f'
+    else:
+        query['type'] = 'd'
+        del query['name']
+        query['path'] = {'$regex':'.*%s.*'%(search),'$options':'i'}
+    dataset = database.search.find(query)
+    for data in dataset:
+        results.append(result(urllib.unquote_plus(data['host']),urllib.unquote_plus(data['path']),urllib.unquote_plus(data['name']),data['section'],data['imdb'],data['timestamp']))
+    
+else:
+    gz_files = glob.glob('%s/db/*.gz'%(scriptpath))
 
-i = 0
-for gz_file in gz_files:
-    if not "1.gz" in gz_file and args.local: # only search the first host in conf/sites.txt
-        continue
-    gz = gzip.open(gz_file)
-    gz_filename = gz_file.split('/')
-    gz_filename = ''.join(gz_filename[len(gz_filename)-1])
-    gz_uri = gz_sites[int(gz_filename.replace(".gz",""))]
+    f = open('%s/conf/sites.txt'%(scriptpath))
+    gz_sites = f.readlines()
+    f.close()
 
-    for line in gz:
-        if (line.startswith("f") and args.file) or (line.startswith("d") and not args.file):
-            relpath = " "
-            relpath = relpath.join(line.split(relpath)[4:]).rstrip('\n\r')
-            search = search.lower()
-            timestamp = int(line.split(" ")[1].split(".")[0])
+    i = 0
+    for gz_file in gz_files:
+        if not "1.gz" in gz_file and args.local: # only search the first host in conf/sites.txt
+            continue
+        gz = gzip.open(gz_file)
+        gz_filename = gz_file.split('/')
+        gz_filename = ''.join(gz_filename[len(gz_filename)-1])
+        gz_uri = gz_sites[int(gz_filename.replace(".gz",""))]
 
-            if (not args.timestamp and (search in relpath.replace('_',' ').replace('-',' ').replace('.',' ').lower() and relpath.count('/') <= recursive)) or (args.timestamp and timestamp > int(search)):
-                dont_show = ['subtitle','sample','subs','screens','insert','proof']
-                lame = False
-                for dont in dont_show:
-                    if '/'+dont in relpath.lower():
-                        lame = True
-                if not lame:
-                    results.append(result(gz_uri.replace('00INDEX.gz','').split(" ")[0],relpath, relpath[relpath.find('/') + 1:],relpath[:relpath.find('/')],'',timestamp))
-    gz.close()
-    i += 1
+        for line in gz:
+            if (line.startswith("f") and args.file) or (line.startswith("d") and not args.file):
+                relpath = " "
+                relpath = relpath.join(line.split(relpath)[4:]).rstrip('\n\r')
+                search = search.lower()
+                timestamp = int(line.split(" ")[1].split(".")[0])
+
+                if (not args.timestamp and (search in relpath.replace('_',' ').replace('-',' ').replace('.',' ').lower() and relpath.count('/') <= recursive)) or (args.timestamp and timestamp > int(search)):
+                    dont_show = ['subtitle','sample','subs','screens','insert','proof']
+                    lame = False
+                    for dont in dont_show:
+                        if '/'+dont in relpath.lower():
+                            lame = True
+                    if not lame:
+                        results.append(result(gz_uri.replace('00INDEX.gz','').split(" ")[0],relpath, relpath[relpath.find('/') + 1:],relpath[:relpath.find('/')],'',timestamp))
+        gz.close()
+        i += 1
 
 if len(results) <= 0:
     print 'no results :('

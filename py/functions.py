@@ -1,3 +1,5 @@
+import re
+
 def table_print(data, title_row):
     """
     data: list of dicts,
